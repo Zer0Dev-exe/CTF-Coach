@@ -1,0 +1,17 @@
+LABELS = {
+    "texto": ("Texto plano", "Parece texto legible sin transformar."),
+    "base64": ("Base64", "Caracteres A-Z, a-z, 0-9, + y / (o - y _ en la variante de URL) y a veces '=' al final."),
+    "base32": ("Base32", "Solo mayúsculas y dígitos 2-7, longitud múltiplo de 8, relleno con '='."),
+    "hex": ("Hexadecimal", "Solo 0-9 y a-f (a veces separados por espacios, ':' o '0x'). Cada par de caracteres es un byte."),
+    "cesar": ("César / ROT13", "Letras desplazadas: las frecuencias se parecen al español, pero movidas."),
+    "atbash": ("Atbash", "Alfabeto en espejo (a↔z, b↔y...): frecuencias del español reflejadas."),
+    "invertido": ("Texto invertido", "Texto legible pero escrito al revés: busca '}' antes de '{'."),
+    "xor": ("XOR (en hex)", "Hex que al decodificarlo da bytes sin sentido (a veces imprimibles): típico de XOR con una clave."),
+    "md5": ("Hash MD5", "32 caracteres hex. Un hash no se descifra: se ataca con diccionario."),
+    "sha1": ("Hash SHA-1", "40 caracteres hex. Un hash no se descifra: se ataca con diccionario."),
+    "sha256": ("Hash SHA-256", "64 caracteres hex. Un hash no se descifra: se ataca con diccionario."),
+    "jwt": ("JWT", "Tres partes base64url separadas por puntos; empieza por 'eyJ'."),
+    "binario": ("Binario", "Grupos de 8 ceros y unos: cada grupo es un byte (un carácter)."),
+    "url": ("Codificación URL", "Secuencias %XX: cada una es un byte en hexadecimal, como %20 para el espacio."),
+    "morse": ("Código Morse", "Puntos y rayas; las letras van separadas por espacios y las palabras por '/'."),
+}

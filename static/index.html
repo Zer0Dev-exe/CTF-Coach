@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>CTF Coach · Aprende ciberseguridad practicando</title>
+  <meta name="description" content="Salas guiadas, retos tipo CTF y un tutor que te orienta sin darte la respuesta. En español.">
+  <meta name="theme-color" content="#0a0d11">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M16 2.6 27.6 9.3v13.4L16 29.4 4.4 22.7V9.3z%27 fill=%27%2357e39a%27 stroke=%27%2357e39a%27 stroke-width=%272.4%27 stroke-linejoin=%27round%27/%3E%3Cpath d=%27M11.6 9.4v14%27 stroke=%27%23052012%27 stroke-width=%272.4%27 stroke-linecap=%27round%27/%3E%3Cpath d=%27M12.4 9.6 21.4 13.4 12.4 17.2z%27 fill=%27%23052012%27 stroke=%27%23052012%27 stroke-width=%271%27 stroke-linejoin=%27round%27/%3E%3Crect x=%2715.4%27 y=%2721.2%27 width=%276.2%27 height=%272.4%27 rx=%271%27 fill=%27%23052012%27/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Logo: hexágono con una bandera de CTF cuyo banderín es un prompt ">" y un cursor "_" de terminal -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="logo" viewBox="0 0 32 32">
+      <path d="M16 2.6 27.6 9.3v13.4L16 29.4 4.4 22.7V9.3z" class="logo-hex"/>
+      <path d="M11.6 9.4v14" class="logo-pole"/>
+      <path d="M12.4 9.6 21.4 13.4 12.4 17.2z" class="logo-flag"/>
+      <rect x="15.4" y="21.2" width="6.2" height="2.4" rx="1" class="logo-cursor"/>
+    </symbol>
+  </svg>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <button class="brand" data-view="landing" aria-label="CTF Coach, ir al inicio">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 2.6 27.6 9.3v13.4L16 29.4 4.4 22.7V9.3z" class="logo-hex"/>
+          <path d="M11.6 9.4v14" class="logo-pole"/>
+          <path d="M12.4 9.6 21.4 13.4 12.4 17.2z" class="logo-flag"/>
+          <rect x="15.4" y="21.2" width="6.2" height="2.4" rx="1" class="logo-cursor"/>
+        </svg>
+        <span class="wordmark"><span class="wm-ctf">CTF</span><span class="wm-coach">coach</span></span>
+      </button>
+      <nav class="nav" aria-label="Principal">
+        <button class="nav-link" data-view="roadmap">Roadmap</button>
+        <button class="nav-link" data-view="rooms">Salas</button>
+        <button class="nav-link" data-view="play">Retos</button>
+        <button class="nav-link" data-view="leaderboard">Clasificación</button>
+        <span class="nav-indicator" aria-hidden="true"></span>
+      </nav>
+      <div id="user-box" class="topbar-right"></div>
+    </div>
+  </header>
+
+  <!-- ================= Landing ================= -->
+  <main id="view-landing" class="landing">
+    <section class="container hero">
+      <div>
+        <span class="eyebrow">Ciberseguridad práctica, en español</span>
+        <h1>Aprende ciberseguridad <em>resolviendo</em>, no memorizando.</h1>
+        <p class="hero-lead">Salas cortas con la teoría justa, retos tipo CTF con datos reales y un tutor que te orienta
+          con preguntas en lugar de darte la solución.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" data-action="register">Crear cuenta gratis <span data-icon="arrow-right"></span></button>
+          <button class="btn btn-secondary btn-lg" data-view="rooms">Ver las salas</button>
+        </div>
+        <div id="hero-facts" class="hero-facts"></div>
+      </div>
+
+      <div class="preview" id="hero-preview" aria-label="Demostración animada de CTF Coach">
+        <div class="pv-glow" aria-hidden="true"></div>
+        <div class="pv-window">
+          <div class="pv-chrome">
+            <span class="pv-crumb" id="pv-crumb"></span>
+            <span class="pv-live"><i></i>demo en vivo</span>
+          </div>
+          <div class="pv-tabs" id="pv-tabs" role="tablist" aria-label="Ejemplos"></div>
+          <div class="preview-body" id="pv-body"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+    <section class="section section-slider">
+      <div class="container">
+        <div class="slider-head">
+          <div class="section-head">
+            <span class="eyebrow">Salas</span>
+            <h2>Elige por dónde empezar.</h2>
+            <p>Salas cortas de teoría y preguntas. Cada una se completa en una sentada.</p>
+          </div>
+          <div class="slider-controls">
+            <button class="btn btn-secondary btn-icon" id="sl-prev" aria-label="Sala anterior"><span data-icon="arrow-left"></span></button>
+            <button class="btn btn-secondary btn-icon" id="sl-next" aria-label="Sala siguiente"><span data-icon="arrow-right"></span></button>
+          </div>
+        </div>
+        <div class="slider" id="room-slider" tabindex="0" aria-roledescription="carrusel" aria-label="Salas disponibles">
+          <div class="slider-track" id="slider-track"></div>
+        </div>
+        <div class="slider-dots" id="slider-dots"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Cómo funciona</span>
+          <h2>Leer, probar, atascarse y salir del atasco.</h2>
+          <p>Cada sala se completa en una sentada. Sin vídeos de una hora ni temario infinito.</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <span class="step-num">01</span>
+            <h3>Lee lo justo</h3>
+            <p>Cada tarea empieza con la teoría mínima y ejemplos reales: logs de un servidor, cabeceras HTTP, permisos de Linux.</p>
+          </div>
+          <div class="step">
+            <span class="step-num">02</span>
+            <h3>Demuéstralo</h3>
+            <p>Responde preguntas o encuentra la flag escondida en los datos. Sabes al momento si lo tienes.</p>
+          </div>
+          <div class="step">
+            <span class="step-num">03</span>
+            <h3>Pide ayuda sin trampas</h3>
+            <p>El Coach te dice dónde mirar y te explica el concepto con otro ejemplo, pero el último paso es tuyo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Rutas de aprendizaje</span>
+          <h2>Empieza por la base y sube de nivel.</h2>
+          <p>Cada ruta agrupa salas cortas. Al completar una sala ganas su insignia; al completar la ruta, la de la ruta.</p>
+        </div>
+        <div id="landing-paths" class="path-list"></div>
+        <div class="section-foot">
+          <p>¿Quieres ver el camino completo, incluidos los temas que aún no están aquí?</p>
+          <button class="btn btn-secondary" data-view="roadmap">Ver el roadmap completo <span data-icon="arrow-right"></span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container split">
+        <div>
+          <div class="section-head">
+            <span class="eyebrow">El Coach</span>
+            <h2>Un tutor que no te hace los deberes.</h2>
+            <p>Tiene una regla que no se salta: nunca te da la flag ni la respuesta. A cambio, conoce la tarea en la que estás
+              y adapta la explicación a tu nivel.</p>
+          </div>
+          <ul class="checklist">
+            <li><span data-icon="check"></span>Te hace preguntas que te llevan a la siguiente pista.</li>
+            <li><span data-icon="check"></span>Explica conceptos con ejemplos distintos a los del ejercicio.</li>
+            <li><span data-icon="check"></span>En los retos, las pistas cuestan puntos: piénsalo antes de pedirlas.</li>
+          </ul>
+        </div>
+        <div class="hint-table">
+          <div class="hint-row free"><span class="mono">salas</span><div><b>Preguntas libres</b><p>Pregunta lo que necesites mientras aprendes.</p></div><span class="cost">0%</span></div>
+          <div class="hint-row"><span class="mono">pista 1</span><div><b>Concepto</b><p>Qué observar o en qué técnica pensar.</p></div><span class="cost">−10%</span></div>
+          <div class="hint-row"><span class="mono">pista 2</span><div><b>Técnica</b><p>La técnica concreta y una herramienta.</p></div><span class="cost">−25%</span></div>
+          <div class="hint-row"><span class="mono">pista 3</span><div><b>Pasos</b><p>El procedimiento, sin hacer el último paso.</p></div><span class="cost">−50%</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="cta">
+          <div>
+            <h2>Tu primera sala son diez minutos.</h2>
+            <p>Redes desde cero: puertos, TCP/UDP y DNS. No hay que instalar nada.</p>
+          </div>
+          <button class="btn btn-primary btn-lg" data-action="start">Empezar ahora <span data-icon="arrow-right"></span></button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <span>CTF Coach · Proyecto educativo</span>
+        <span>Practica solo en sistemas propios o con autorización expresa.</span>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ================= Salas ================= -->
+  <main id="view-rooms" class="container page" hidden>
+    <div class="page-head">
+      <div>
+        <h1>Salas</h1>
+        <p>Teoría corta y preguntas para fijarla. Completa salas para ganar insignias y sumar puntos.</p>
+      </div>
+      <div class="page-progress">
+        <div class="progress"><div id="rooms-progress" class="progress-bar"></div></div>
+        <span id="rooms-progress-text" class="small-text"></span>
+      </div>
+    </div>
+    <section class="badges-box" aria-label="Insignias">
+      <span class="section-label">Insignias</span>
+      <div id="badges" class="badges"></div>
+    </section>
+    <div id="paths"></div>
+  </main>
+
+  <main id="view-room" class="container detail" hidden>
+    <div class="detail-main">
+      <button id="room-back" class="link-btn"><span data-icon="arrow-left"></span>Salas</button>
+      <div class="detail-head">
+        <span id="room-icon" class="icon-tile lg"></span>
+        <div>
+          <h1 id="room-title"></h1>
+          <p id="room-summary"></p>
+        </div>
+      </div>
+      <div class="detail-progress">
+        <div class="progress"><div id="room-progress" class="progress-bar"></div></div>
+        <p id="room-progress-text" class="small-text"></p>
+      </div>
+      <div id="tasks"></div>
+    </div>
+
+    <aside class="coach panel" aria-label="Coach">
+      <div class="coach-head">
+        <svg class="logo coach-logo" aria-hidden="true"><use href="#logo"/></svg>
+        <div><h2>Coach</h2><p>En las salas no resta puntos</p></div>
+        <select class="level-select" aria-label="Nivel de las explicaciones">
+          <option value="principiante">Principiante</option>
+          <option value="intermedio">Intermedio</option>
+          <option value="avanzado">Avanzado</option>
+        </select>
+      </div>
+      <div id="room-messages" class="messages" aria-live="polite"></div>
+      <form id="room-chat-form" class="chat-form">
+        <input id="room-chat-input" maxlength="2000" placeholder="¿Qué no te queda claro?" autocomplete="off" aria-label="Mensaje para el Coach">
+        <button type="submit" class="btn btn-primary btn-icon" aria-label="Enviar"><span data-icon="send"></span></button>
+      </form>
+    </aside>
+  </main>
+
+  <!-- ================= Retos ================= -->
+  <main id="view-play" class="container page" hidden>
+    <div class="page-head">
+      <div>
+        <h1>Retos</h1>
+        <p>Encuentra la flag con formato <code>flag{...}</code> escondida en los datos. Las pistas del Coach cuestan puntos.</p>
+      </div>
+      <div class="page-progress">
+        <div class="progress"><div id="ch-progress" class="progress-bar"></div></div>
+        <span id="ch-progress-text" class="small-text"></span>
+      </div>
+    </div>
+
+    <form id="gen-form" class="gen-card panel">
+      <span class="icon-tile" data-icon="plus"></span>
+      <div class="gen-text">
+        <strong>Crear un reto nuevo</strong>
+        <span class="muted small-text">Escribe un tema y se genera un reto de codificación o criptografía con su historia y sus pistas.</span>
+      </div>
+      <div class="gen-controls">
+        <input id="gen-theme" maxlength="200" placeholder="Tema: piratas, espacio, Egipto…" aria-label="Tema del reto">
+        <select id="gen-difficulty" aria-label="Dificultad">
+          <option>Fácil</option><option selected>Media</option><option>Difícil</option>
+        </select>
+        <button type="submit" class="btn btn-secondary">Generar</button>
+      </div>
+      <p id="gen-status" class="small-text" role="status"></p>
+    </form>
+
+    <div id="challenge-groups" class="groups"></div>
+  </main>
+
+  <main id="view-challenge" class="container detail" hidden>
+    <div class="detail-main">
+      <button id="ch-back" class="link-btn"><span data-icon="arrow-left"></span>Retos</button>
+      <div class="detail-head">
+        <span id="ch-icon" class="icon-tile lg"></span>
+        <div>
+          <h1 id="ch-title"></h1>
+          <div class="tags">
+            <span id="ch-diff" class="tag"></span><span id="ch-cat" class="tag"></span>
+            <span id="ch-points" class="tag"></span><span id="ch-author" class="tag ai" hidden></span>
+          </div>
+        </div>
+      </div>
+
+      <section class="panel challenge-body">
+        <p id="ch-desc" class="desc"></p>
+        <div>
+          <p class="data-label">Datos</p>
+          <div class="data-box">
+            <button id="copy" class="btn btn-secondary btn-sm copy-btn"><span data-icon="copy"></span><span>Copiar</span></button>
+            <pre id="ch-data"></pre>
+          </div>
+        </div>
+        <form id="flag-form" class="flag-form">
+          <input id="flag-input" class="input-mono" placeholder="flag{...}" autocomplete="off" spellcheck="false" aria-label="Flag">
+          <button type="submit" class="btn btn-primary">Enviar flag</button>
+        </form>
+        <p id="flag-result" class="flag-result" role="status"></p>
+      </section>
+
+      <details id="analyzer" class="analyzer panel">
+        <summary>
+          <span class="icon-tile" data-icon="bars"></span>
+          <span><b>Analizador local</b><span class="small-text muted">Identifica codificaciones y cifrados. Gratis y sin penalización.</span></span>
+          <span class="chev" data-icon="chevron-down"></span>
+        </summary>
+        <div class="analyzer-body">
+          <p class="small-text muted">Pega los datos del reto o un resultado intermedio: el modelo lo analiza mientras escribes.
+            Reconoce 15 formatos, de Base64 y hex a César, XOR, Morse o hashes.</p>
+          <textarea id="an-input" rows="4" maxlength="5000" spellcheck="false" aria-label="Texto a analizar"></textarea>
+          <div class="an-bar-row">
+            <button id="an-reset" type="button" class="btn btn-ghost btn-sm">Usar datos del reto</button>
+            <span id="an-meta" class="an-meta" aria-live="polite"></span>
+          </div>
+          <div id="an-results" class="an-results" aria-live="polite"></div>
+          <figure id="an-figure" class="an-figure" hidden>
+            <figcaption>
+              <span class="an-legend"><i class="sw-text"></i>Tu texto</span>
+              <span class="an-legend"><i class="sw-es"></i>Español habitual</span>
+            </figcaption>
+            <div id="an-chart"></div>
+            <p class="small-text muted">Si las barras tienen la forma de los puntos pero desplazada, sospecha de un cifrado César.</p>
+          </figure>
+        </div>
+      </details>
+    </div>
+
+    <aside class="coach panel" aria-label="Coach">
+      <div class="coach-head">
+        <svg class="logo coach-logo" aria-hidden="true"><use href="#logo"/></svg>
+        <div><h2>Coach</h2><p>Te orienta, no te da la flag</p></div>
+        <select class="level-select" aria-label="Nivel de las explicaciones">
+          <option value="principiante">Principiante</option>
+          <option value="intermedio">Intermedio</option>
+          <option value="avanzado">Avanzado</option>
+        </select>
+      </div>
+      <p class="coach-note">Pide una pista o cuéntale qué has probado. <span id="hint-status"></span></p>
+      <div class="hint-buttons">
+        <button data-hint="1" class="btn btn-secondary">Pista 1 <small>−10%</small></button>
+        <button data-hint="2" class="btn btn-secondary">Pista 2 <small>−25%</small></button>
+        <button data-hint="3" class="btn btn-secondary">Pista 3 <small>−50%</small></button>
+      </div>
+      <div id="messages" class="messages" aria-live="polite"></div>
+      <form id="chat-form" class="chat-form">
+        <input id="chat-input" maxlength="2000" placeholder="¿Qué has probado?" autocomplete="off" aria-label="Mensaje para el Coach">
+        <button type="submit" class="btn btn-primary btn-icon" aria-label="Enviar"><span data-icon="send"></span></button>
+      </form>
+    </aside>
+  </main>
+
+  <!-- ================= Roadmap ================= -->
+  <main id="view-roadmap" class="container page" hidden>
+    <div class="page-head">
+      <div>
+        <h1>Roadmap de ciberseguridad</h1>
+        <p>Un camino completo desde cero hasta la especialización. Los temas marcados como disponibles se practican aquí;
+          el resto, de momento, con recursos externos de confianza.</p>
+      </div>
+      <div class="page-progress">
+        <div class="progress"><div id="rm-progress" class="progress-bar"></div></div>
+        <span id="rm-progress-text" class="small-text"></span>
+      </div>
+    </div>
+
+    <div class="rm-toolbar">
+      <div class="rm-legend" aria-label="Leyenda">
+        <span class="status status-completado"><i></i>Completado</span>
+        <span class="status status-en_curso"><i></i>En curso</span>
+        <span class="status status-disponible"><i></i>Disponible aquí</span>
+        <span class="status status-externo"><i></i>Recursos externos</span>
+      </div>
+      <div class="segmented rm-filter" role="tablist" aria-label="Filtrar temas">
+        <button type="button" role="tab" data-filter="all" aria-selected="true">Todo</button>
+        <button type="button" role="tab" data-filter="here" aria-selected="false">Solo disponible aquí</button>
+      </div>
+    </div>
+
+    <ol id="roadmap" class="roadmap"></ol>
+    <p class="rm-note">Las duraciones son orientativas, pensando en unas 5-8 horas de estudio a la semana.
+      Los recursos externos son de terceros: no forman parte de CTF Coach.</p>
+  </main>
+
+  <!-- ================= Clasificación ================= -->
+  <main id="view-leaderboard" class="container page" hidden>
+    <div class="page-head">
+      <div>
+        <h1>Clasificación</h1>
+        <p>Puntos de salas y retos. Con los mismos puntos, va delante quien llegó antes.</p>
+      </div>
+      <div class="segmented lb-period" role="tablist" aria-label="Periodo">
+        <button type="button" role="tab" data-period="all" aria-selected="true">Siempre</button>
+        <button type="button" role="tab" data-period="week" aria-selected="false">Últimos 7 días</button>
+      </div>
+    </div>
+    <section id="lb-me" class="lb-me" aria-live="polite"></section>
+    <section id="lb-podium" class="podium" aria-label="Podio"></section>
+    <section id="lb-board" class="panel board">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Jugador</th><th class="bar-col">Puntos</th><th class="num">Salas</th><th class="num">Retos</th></tr></thead>
+          <tbody id="leaderboard"></tbody>
+        </table>
+      </div>
+    </section>
+    <div id="leaderboard-empty" class="board-empty panel" hidden></div>
+  </main>
+
+  <!-- ================= Acceso ================= -->
+  <div id="auth-modal" class="modal" hidden>
+    <form id="auth-form" class="auth-card" role="dialog" aria-modal="true" aria-labelledby="auth-title" novalidate>
+      <button type="button" id="auth-cancel" class="btn btn-ghost btn-icon auth-close" aria-label="Cerrar"><span data-icon="x"></span></button>
+      <div class="auth-head">
+        <svg class="logo logo-lg" aria-hidden="true"><use href="#logo"/></svg>
+        <h2 id="auth-title"></h2>
+        <p id="auth-sub"></p>
+      </div>
+      <div class="segmented" role="tablist" aria-label="Tipo de acceso">
+        <button type="button" role="tab" data-mode="login" id="tab-login">Iniciar sesión</button>
+        <button type="button" role="tab" data-mode="register" id="tab-register">Crear cuenta</button>
+      </div>
+      <div class="auth-fields">
+        <div class="field" id="f-user">
+          <label for="auth-user">Nombre de usuario</label>
+          <input id="auth-user" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="20" aria-describedby="user-hint user-error">
+          <p class="field-hint" id="user-hint">Entre 3 y 20 caracteres: letras, números o guion bajo.</p>
+          <p class="field-error" id="user-error" hidden></p>
+        </div>
+        <div class="field" id="f-pass">
+          <label for="auth-pass">Contraseña</label>
+          <div class="input-wrap">
+            <input id="auth-pass" type="password" maxlength="128" aria-describedby="pass-hint pass-error">
+            <button type="button" id="pass-toggle" class="btn btn-ghost btn-icon" aria-label="Mostrar contraseña" aria-pressed="false"><span data-icon="eye"></span></button>
+          </div>
+          <div id="strength" class="strength" data-level="0" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <p class="field-hint" id="pass-hint"></p>
+          <p class="field-error" id="pass-error" hidden></p>
+        </div>
+      </div>
+      <div id="auth-error" class="form-error" role="alert"></div>
+      <button type="submit" id="auth-submit" class="btn btn-primary btn-lg btn-block"></button>
+      <p class="auth-foot"><span id="auth-foot-text"></span> <button type="button" id="auth-switch"></button></p>
+    </form>
+  </div>
+
+  <!-- ================= Bit, la mascota ================= -->
+  <div id="bit" class="bit">
+    <section id="bit-panel" class="bit-panel" role="dialog" aria-labelledby="bit-title" hidden>
+      <header class="bit-head">
+        <span class="bit-avatar" data-bit></span>
+        <div class="bit-head-text"><strong id="bit-title">Bit</strong><span>Te guío por CTF Coach</span></div>
+        <button id="bit-close" class="btn btn-ghost btn-icon btn-sm" aria-label="Cerrar el chat"><span data-icon="x"></span></button>
+      </header>
+      <div id="bit-messages" class="bit-messages" aria-live="polite"></div>
+      <div id="bit-suggestions" class="bit-suggestions"></div>
+      <form id="bit-form" class="bit-form">
+        <input id="bit-input" maxlength="500" placeholder="Pregúntame lo que sea…" autocomplete="off" aria-label="Mensaje para Bit">
+        <button type="submit" class="btn btn-primary btn-icon" aria-label="Enviar"><span data-icon="send"></span></button>
+      </form>
+    </section>
+    <span id="bit-bubble" class="bit-bubble" hidden>¿Dudas? Pregúntame</span>
+    <button id="bit-fab" class="bit-fab" aria-label="Abrir el chat de Bit" aria-expanded="false" aria-controls="bit-panel">
+      <span class="bit-mascot" data-bit></span>
+    </button>
+  </div>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
