@@ -88,6 +88,11 @@ def _stmt(sql, params=()):
 
 class Connection:
     def __init__(self, url: str, token: str):
+        # Tolera lo que suele colarse al copiar y pegar: espacios, comillas o «Bearer »
+        url = url.strip().strip("'\"")
+        token = token.strip().strip("'\"")
+        if token.lower().startswith("bearer "):
+            token = token[7:].strip()
         self._url = url.replace("libsql://", "https://", 1).rstrip("/")
         self._token = token
         self._baton = None
@@ -102,7 +107,11 @@ class Connection:
             with urllib.request.urlopen(req, timeout=15) as resp:
                 data = json.load(resp)
         except urllib.error.HTTPError as e:
-            raise sqlite3.OperationalError(f"Turso HTTP {e.code}: {e.read().decode(errors='replace')}") from e
+            detail = e.read().decode(errors="replace")
+            if e.code == 401:
+                detail += (" -> Revisa TURSO_AUTH_TOKEN: debe generarse en la página de ESTA base de datos"
+                           " (no en Settings > API Tokens) y con permiso de lectura y escritura.")
+            raise sqlite3.OperationalError(f"Turso HTTP {e.code}: {detail}") from e
         self._baton = data.get("baton")
         if data.get("base_url"):
             self._url = data["base_url"].rstrip("/")

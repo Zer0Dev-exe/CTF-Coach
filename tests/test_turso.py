@@ -50,3 +50,9 @@ def test_failed_block_rolls_back(remote):
 
 def test_libsql_url_becomes_https():
     assert turso.Connection("libsql://db-org.turso.io", "t")._url == "https://db-org.turso.io"
+
+
+def test_pasted_credentials_are_cleaned():
+    conn = turso.Connection(' "libsql://db-org.turso.io" ', "Bearer eyJabc
+")
+    assert conn._url == "https://db-org.turso.io" and conn._token == "eyJabc"
