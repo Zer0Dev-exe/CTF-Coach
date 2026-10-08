@@ -76,6 +76,15 @@ docker build -t ctf-coach .
 docker run -p 127.0.0.1:8000:8000 -v ctf-data:/data ctf-coach
 ```
 
+### Desplegar en la nube
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Zer0Dev-exe/CTF-Coach)
+
+- **Render:** `render.yaml` crea el servicio a partir del `Dockerfile`, con un disco de 1 GB en `/data` para la base de datos (requiere el plan Starter, porque el gratuito no tiene discos).
+- **Railway:** *New Project → Deploy from GitHub repo*. `railway.json` usa el `Dockerfile`. Añade un volumen montado en `/data` y la variable `COOKIE_SECURE=1`.
+
+La base de datos es SQLite, así que necesita un disco persistente. Por eso no sirven plataformas serverless como Vercel.
+
 ### Pruebas
 
 ```bash
