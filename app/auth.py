@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import os
 import secrets
 from datetime import datetime, timedelta, timezone
 
@@ -10,6 +11,8 @@ from .db import connect
 SESSION_COOKIE = "ctf_session"
 SESSION_DAYS = 7
 SCRYPT = dict(n=2**14, r=8, p=1)
+# En producción (HTTPS) la cookie solo viaja cifrada
+COOKIE_SECURE = os.environ.get("COOKIE_SECURE") == "1"
 
 
 def hash_password(password: str) -> str:
@@ -35,7 +38,7 @@ def start_session(response: Response, user_id: int):
         conn.execute("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)",
                       (token, user_id, expires.isoformat()))
     response.set_cookie(SESSION_COOKIE, token, max_age=SESSION_DAYS * 86400,
-                        httponly=True, samesite="lax")
+                        httponly=True, samesite="lax", secure=COOKIE_SECURE)
 
 
 def end_session(response: Response, token: str | None):

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ctf-coach
+    runtime: docker
+    plan: starter            # los discos persistentes no están disponibles en el plan gratuito
+    healthCheckPath: /
+    envVars:
+      - key: CTF_DB
+        value: /data/ctf.db
+      - key: COOKIE_SECURE
+        value: "1"
+    disk:
+      name: ctf-data
+      mountPath: /data
+      sizeGB: 1
