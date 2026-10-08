@@ -76,14 +76,18 @@ docker build -t ctf-coach .
 docker run -p 127.0.0.1:8000:8000 -v ctf-data:/data ctf-coach
 ```
 
-### Desplegar en la nube
+### Desplegar en la nube (gratis)
 
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Zer0Dev-exe/CTF-Coach)
+La web va en **Render** y la base de datos en **Turso** (SQLite en la nube). Los dos tienen plan gratuito sin tarjeta.
 
-- **Render:** `render.yaml` crea el servicio a partir del `Dockerfile`, con un disco de 1 GB en `/data` para la base de datos (requiere el plan Starter, porque el gratuito no tiene discos).
-- **Railway:** *New Project → Deploy from GitHub repo*. `railway.json` usa el `Dockerfile`. Añade un volumen montado en `/data` y la variable `COOKIE_SECURE=1`.
+1. En [Turso](https://turso.tech) crea una base de datos y copia su URL (`libsql://...`) y un token (*Create Token*).
+2. Pulsa el botón y, cuando Render lo pida, pega la URL en `TURSO_DATABASE_URL` y el token en `TURSO_AUTH_TOKEN`:
 
-La base de datos es SQLite, así que necesita un disco persistente. Por eso no sirven plataformas serverless como Vercel.
+   [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Zer0Dev-exe/CTF-Coach)
+
+Sin esas variables la app usa un archivo SQLite local, como en desarrollo. El adaptador (`app/turso.py`) habla con Turso por HTTP sin dependencias extra. Se prueba contra un servidor falso con el mismo protocolo (`tests/fake_turso.py`).
+
+El plan gratuito de Render duerme el servicio tras unos 15 minutos sin visitas, así que la primera carga después tarda unos 30-60 s. Los datos no se pierden porque están en Turso.
 
 ### Pruebas
 

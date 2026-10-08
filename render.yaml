@@ -2,14 +2,13 @@ services:
   - type: web
     name: ctf-coach
     runtime: docker
-    plan: starter            # los discos persistentes no están disponibles en el plan gratuito
+    plan: free
     healthCheckPath: /
     envVars:
-      - key: CTF_DB
-        value: /data/ctf.db
       - key: COOKIE_SECURE
         value: "1"
-    disk:
-      name: ctf-data
-      mountPath: /data
-      sizeGB: 1
+      # La base de datos vive en Turso (gratis); Render pide estos valores al crear el servicio
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false

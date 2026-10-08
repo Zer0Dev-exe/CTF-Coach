@@ -3,7 +3,12 @@ import sqlite3
 from contextlib import contextmanager
 from pathlib import Path
 
+from . import turso
+
 DB_PATH = Path(os.environ.get("CTF_DB", Path(__file__).resolve().parent.parent / "data" / "ctf.db"))
+# Si están definidas, la base de datos vive en Turso (SQLite en la nube) en vez de en un archivo local.
+TURSO_URL = os.environ.get("TURSO_DATABASE_URL")
+TURSO_TOKEN = os.environ.get("TURSO_AUTH_TOKEN", "")
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
@@ -61,7 +66,8 @@ CREATE TABLE IF NOT EXISTS generated_challenges (
 
 
 def init_db():
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if not TURSO_URL:
+        DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     with connect() as conn:
         conn.executescript(SCHEMA)
         # Migración de bases de datos creadas antes de que existieran las pistas.
@@ -72,9 +78,12 @@ def init_db():
 
 @contextmanager
 def connect():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
+    if TURSO_URL:
+        conn = turso.Connection(TURSO_URL, TURSO_TOKEN)
+    else:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON")
     try:
         yield conn
         conn.commit()
