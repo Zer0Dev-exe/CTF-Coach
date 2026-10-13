@@ -53,6 +53,5 @@ def test_libsql_url_becomes_https():
 
 
 def test_pasted_credentials_are_cleaned():
-    conn = turso.Connection(' "libsql://db-org.turso.io" ', "Bearer eyJabc
-")
+    conn = turso.Connection(' "libsql://db-org.turso.io" ', "Bearer eyJabc\n")
     assert conn._url == "https://db-org.turso.io" and conn._token == "eyJabc"
